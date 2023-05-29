@@ -11,6 +11,31 @@ Before running the Allane application, ensure that you have the following prereq
 2. Gradle
 3. Docker (for Dockerized database setup)
 
+
+Dockerized Database Setup
+-------------------------
+If you prefer to use Docker for the database setup, follow these additional steps:
+
+1. Install Docker on your system and ensure it is running.
+2. Open the command line or terminal and navigate to the project directory.
+3. Build the Docker image for the PostgreSQL database using the provided Dockerfile:
+   ```
+   docker build -t allane-db -f DockerFile .
+   ```
+4. Run the Docker container with the following command:
+   ```
+   docker run -p 3306:3306 --name allane-db-container -d allane-db
+   ```
+   This will start the MySQL container and map port 3306 on the container to the same port on your local machine.
+5. Update the `application.properties` file with the appropriate database connection properties:
+   ```
+   spring.datasource.url=jdbc:postgresql://localhost:3306/allane-mobility-group
+   spring.datasource.username=myuser
+   spring.datasource.password=password
+   ```
+6. Save the changes made to the `application.properties` file.
+7. Proceed with the steps mentioned in the "How to Start the Application" section to run the Allane application.
+
 How to Start the Application
 ----------------------------
 To start the Allane application, follow these steps:
@@ -30,29 +55,6 @@ To start the Allane application, follow these steps:
    ```
 8. The Allane application will start, and you should see the application logs in the console.
 
-Dockerized Database Setup
--------------------------
-If you prefer to use Docker for the database setup, follow these additional steps:
-
-1. Install Docker on your system and ensure it is running.
-2. Open the command line or terminal and navigate to the project directory.
-3. Build the Docker image for the PostgreSQL database using the provided Dockerfile:
-   ```
-   docker build -t allane-db -f DockerFile .
-   ```
-4. Run the Docker container with the following command:
-   ```
-   docker run -p 3306:3306 --name allane-db-container -d allane-db
-   ```
-   This will start the PostgreSQL container and map port 5432 on the container to the same port on your local machine.
-5. Update the `application.properties` file with the appropriate database connection properties:
-   ```
-   spring.datasource.url=jdbc:postgresql://localhost:3306/allane-mobility-group
-   spring.datasource.username=myuser
-   spring.datasource.password=password
-   ```
-6. Save the changes made to the `application.properties` file.
-7. Proceed with the steps mentioned in the "How to Start the Application" section to run the Allane application.
 
 Frontend Hierarchy and Pages
 ============================
