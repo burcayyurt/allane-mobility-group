@@ -1,0 +1,15 @@
+# Base image
+FROM mysql:8.0.27
+
+# Environment variables
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=allane-mobility-group
+ENV MYSQL_USER=myuser
+ENV MYSQL_PASSWORD=password
+
+COPY ./src/main/resources/db/migration/ /docker-entrypoint-initdb.d/
+
+# Expose port
+EXPOSE 3306
+
+CMD ["mysqld"]

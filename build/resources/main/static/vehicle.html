@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VehicleDetails</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 500px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            margin-left: 10px;
+        }
+        .back-button {
+            display: block;
+            margin-top: 600px;
+            margin-left: -50px;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input[type="text"] {
+            padding-right: 40px;
+        }
+
+        .currency {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #555;
+        }
+        .alert {
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form id="vehicleForm" action="/api/vehicle" method="post">
+        <fieldset>
+            <legend>Vehicle</legend>
+            <div class="form-group">
+                <label for="brand">Brand:</label>
+                <select id="brand" name="brand" onchange="updateModelDropdown(this.value)">
+                    <option value="">Select Brand</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes">Mercedes</option>
+                    <option value="Audi">Audi</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <select id="model" name="model">
+                    <option value="">Select Model</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" />
+            </div>
+
+            <div class="form-group">
+                <label for="vin">VIN:</label>
+                <input type="number" id="vin" name="vin" />
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="price" name="price" />
+                    <span class="currency">&#8364;</span>
+                </div>
+            </div>
+
+
+            <div class="buttons">
+                <button type="button" onclick="cancel()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<button class="back-button" onclick="goBack()">Back</button>
+<div id="errorAlert" class="alert hidden"></div>
+
+<script>
+    function updateModelDropdown(brand) {
+        var modelDropdown = document.getElementById('model');
+        modelDropdown.innerHTML = '';
+
+        if (brand === 'BMW') {
+            var option1 = document.createElement('option');
+            option1.value = 'BMW 520';
+            option1.text = 'BMW 520';
+            modelDropdown.add(option1);
+
+            var option2 = document.createElement('option');
+            option2.value = 'BMW 330i';
+            option2.text = 'BMW 330i';
+            modelDropdown.add(option2);
+
+            var option3 = document.createElement('option');
+            option3.value = 'BMW X1';
+            option3.text = 'BMW X1';
+            modelDropdown.add(option3);
+
+            var option4 = document.createElement('option');
+            option4.value = 'BMW X3';
+            option4.text = 'BMW X3';
+            modelDropdown.add(option4);
+
+            var option5 = document.createElement('option');
+            option5.value = 'BMW X5';
+            option5.text = 'BMW X5';
+            modelDropdown.add(option5);
+        } else if (brand === 'Mercedes') {
+            var option1 = document.createElement('option');
+            option1.value = 'E300 Coupe';
+            option1.text = 'E300 Coupe';
+            modelDropdown.add(option1);
+
+            var option2 = document.createElement('option');
+            option2.value = 'A200';
+            option2.text = 'A200';
+            modelDropdown.add(option2);
+
+            var option3 = document.createElement('option');
+            option3.value = 'C200';
+            option3.text = 'C200';
+            modelDropdown.add(option3);
+
+            var option4 = document.createElement('option');
+            option4.value = 'GLC300';
+            option4.text = 'GLC300';
+            modelDropdown.add(option4);
+
+            var option5 = document.createElement('option');
+            option5.value = 'Maybac';
+            option5.text = 'Maybac';
+            modelDropdown.add(option5);
+        } else if (brand === 'Audi') {
+            var option1 = document.createElement('option');
+            option1.value = 'A5';
+            option1.text = 'A5';
+            modelDropdown.add(option1);
+
+            var option2 = document.createElement('option');
+            option2.value = 'A7';
+            option2.text = 'A7';
+            modelDropdown.add(option2);
+
+            var option3 = document.createElement('option');
+            option3.value = 'Q5';
+            option3.text = 'Q5';
+            modelDropdown.add(option3);
+
+            var option4 = document.createElement('option');
+            option4.value = 'RSQ8';
+            option4.text = 'RSQ8';
+            modelDropdown.add(option4);
+
+            var option5 = document.createElement('option');
+            option5.value = 'Quattro';
+            option5.text = 'Quattro';
+            modelDropdown.add(option5);
+        }
+    }
+
+    function showAlert(message) {
+        var errorAlert = document.getElementById('errorAlert');
+        errorAlert.textContent = message;
+        errorAlert.classList.remove('hidden');
+    }
+    function cancel() {
+        location.reload();
+    }
+
+    function goBack() {
+        window.location.href = 'index.html';
+    }
+</script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const vehicleId = urlParams.get('vehicleId');
+
+    document.getElementById('vehicleForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var formData = {
+            brand: document.getElementById('brand').value,
+            model: document.getElementById('model').value,
+            modelYear: parseInt(document.getElementById('year').value),
+            identificationNumber: document.getElementById('vin').value,
+            price: document.getElementById('price').value
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const vehicleId = urlParams.get('vehicleId');
+
+        const requestMethod = vehicleId ? 'PUT' : 'POST';
+        const url = vehicleId ? '/api/vehicle/'+vehicleId : '/api/vehicle';
+
+        fetch(url, {
+            method: requestMethod,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error('Error: ' + data.error);
+                    });
+                }
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                showAlert(error.message);
+            });
+
+    });
+    function getDefaultValues() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const vehicleId = urlParams.get('vehicleId');
+
+        if (vehicleId) {
+            fetch(`/api/vehicle/${vehicleId}`)
+                .then(response => response.json())
+                .then(vehicle => {
+                    document.getElementById('brand').value = vehicle.brand || '';
+                    updateModelDropdown(vehicle.brand, vehicle.model);
+                    document.getElementById('year').value = vehicle.modelYear || '';
+                    document.getElementById('price').value = vehicle.price || '';
+                    document.getElementById('vin').value = vehicle.identificationNumber;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
+
+    function updateModelDropdown(brand, selectedModel) {
+        var modelDropdown = document.getElementById('model');
+        modelDropdown.innerHTML = '';
+
+        if (brand === 'BMW') {
+            var models = [
+                'BMW 520',
+                'BMW 330i',
+                'BMW X1',
+                'BMW X3',
+                'BMW X5'
+            ];
+        } else if (brand === 'Mercedes') {
+            var models = [
+                'E300 Coupe',
+                'A200',
+                'C200',
+                'GLC300',
+                'Maybac'
+            ];
+        } else if (brand === 'Audi') {
+            var models = [
+                'A5',
+                'A7',
+                'Q5',
+                'RSQ8',
+                'Quattro'
+            ];
+        }
+
+        models.forEach(function(model) {
+            var option = document.createElement('option');
+            option.value = model;
+            option.text = model;
+            modelDropdown.add(option);
+        });
+
+        if (selectedModel) {
+            modelDropdown.value = selectedModel;
+        }
+    }
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        getDefaultValues();
+    });
+</script>
+</body>
+</html>

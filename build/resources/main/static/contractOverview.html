@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contract Overview</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        legend {
+            font-weight: bold;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <fieldset>
+        <legend>Contract Overview</legend>
+        <table id="contractTable">
+            <tr>
+                <th>Contract Number</th>
+                <th>Customer</th>
+                <th>Vehicle</th>
+                <th>VIN</th>
+                <th>Monthly Rate</th>
+                <th>Vehicle Price</th>
+                <th>Details</th>
+            </tr>
+        </table>
+        <button class="back-button" onclick="window.location.href = 'index.html';">Back</button>
+    </fieldset>
+</div>
+
+<script>
+    fetch('/api/contractOverview')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(contract => {
+                const row = document.createElement("tr");
+                const contractNoCell = document.createElement("td");
+                const customerCell = document.createElement("td");
+                const vehicleCell = document.createElement("td");
+                const vinCell = document.createElement("td");
+                const monthlyRateCell = document.createElement("td");
+                const vehiclePriceCell = document.createElement("td");
+                const detailsCell = document.createElement("td");
+                const detailsButton = document.createElement("button");
+
+                contractNoCell.textContent = contract.contractNo;
+                customerCell.textContent = contract.customer;
+                vehicleCell.textContent = contract.vehicle;
+                vinCell.textContent = contract.VIN;
+                monthlyRateCell.textContent = contract.monthlyRate;
+                vehiclePriceCell.textContent = contract.vehiclePrice;
+
+                detailsButton.textContent = "Edit";
+                detailsButton.addEventListener("click", function() {
+                    window.location.href = "leasingContract.html?contractNumber=" + contract.contractNo;
+                });
+
+                row.appendChild(contractNoCell);
+                row.appendChild(customerCell);
+                row.appendChild(vehicleCell);
+                row.appendChild(vinCell);
+                row.appendChild(monthlyRateCell);
+                row.appendChild(vehiclePriceCell);
+                detailsCell.appendChild(detailsButton);
+
+                row.appendChild(detailsCell);
+
+                document.getElementById("contractTable").appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
+</body>
+</html>

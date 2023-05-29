@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CustomerDetails</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    fieldset {
+      width: 500px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .buttons {
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .buttons button {
+      margin-left: 10px;
+    }
+
+    .back-button {
+      display: block;
+      margin-top: 400px;
+      margin-left: -50px;
+      padding: 10px;
+      font-size: 16px;
+      text-align: center;
+      border: none;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+    .alert {
+      padding: 10px;
+      background-color: #f44336;
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <form id="customerForm" action="/api/customer" method="post">
+    <fieldset>
+      <legend>Customer</legend>
+      <div class="form-group">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" />
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" />
+      </div>
+
+      <div class="form-group">
+        <label for="birthdate">Birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate" />
+      </div>
+
+      <div class="buttons">
+        <button type="button" onclick="cancel()">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+    </fieldset>
+  </form>
+  <button class="back-button" onclick="goBack()">Back</button>
+  <div id="errorAlert" class="alert hidden"></div>
+</div>
+<script>
+  function cancel() {
+    location.reload()
+  }
+  function goBack() {
+    window.location.href = 'index.html';
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const customerId = urlParams.get('customerId');
+
+  document.getElementById('customerForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var formData = {
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      birthDate: document.getElementById('birthdate').value
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerId = urlParams.get('customerId');
+
+    const requestMethod = customerId ? 'PUT' : 'POST';
+    const url = customerId ? '/api/customer/'+customerId : '/api/customer';
+
+    fetch(url, {
+      method: requestMethod,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+            .then(response => {
+              if (response.ok) {
+                location.reload();
+                return response.json();
+              } else {
+                return response.json().then(data => {
+                  throw new Error('Error: ' + data.error);
+                });
+              }
+            })
+            .then(data => {
+              console.log(data);
+            })
+            .catch(error => {
+              showAlert(error.message);
+            });
+  });
+
+
+  function getDefaultValues() {
+    const birthdateInput = document.getElementById('birthdate');
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerId = urlParams.get('customerId');
+
+    if (customerId) {
+      fetch(`/api/customer/${customerId}`)
+              .then(response => response.json())
+              .then(customer => {
+                document.getElementById('firstName').value = customer.firstName || '';
+                document.getElementById('lastName').value = customer.lastName || '';
+                const birthdate = customer.birthDate ? customer.birthDate.split('T')[0] : '';
+                document.getElementById('birthdate').value = birthdate;
+
+                birthdateInput._flatpickr.setDate(birthdate);
+              })
+              .catch(error => {
+                console.log(error);
+              });
+    }
+
+  }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    getDefaultValues();
+  });
+</script>
+</body>
+</html>

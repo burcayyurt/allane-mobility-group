@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeasingContract</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    fieldset {
+      width: 500px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .buttons {
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .buttons button {
+      margin-left: 10px;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      text-align: center;
+      border: none;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+    .alert {
+      padding: 10px;
+      background-color: #f44336;
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <form id="leasingContractForm" action="/api/leasingContract" method="post">
+    <fieldset>
+      <legend>Leasing Contract</legend>
+      <div class="form-group">
+        <label for="contractNumber">Contract Number:</label>
+        <input type="text" id="contractNumber" name="contractNumber" />
+      </div>
+
+      <div class="form-group">
+        <label for="monthlyRate">Monthly Rate:</label>
+        <input type="text" id="monthlyRate" name="monthlyRate" />
+      </div>
+
+      <div class="form-group">
+        <label for="customerList">Select Customer:</label>
+        <select id="customerList" name="customerList" onchange="updateCustomerTextbox(this.value)">
+          <option value="">Select Customer</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="customerTextbox">Customer:</label>
+        <input type="hidden" id="customerId" name="customerId" />
+        <input type="text" id="customerTextbox" name="customerTextbox" readonly />
+      </div>
+      <div class="form-group">
+        <button type="button" onclick="editCustomer()">Edit Customer</button>
+        <button type="button" onclick="deleteCustomer()">Delete Customer</button>
+      </div>
+
+      <div class="form-group">
+        <label for="vehicleList">Select Vehicle:</label>
+        <select id="vehicleList" name="vehicleList" onchange="updateVehicleTextBox(this.value)">
+          <option value="">Select Vehicle</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="vehicleTextbox">Vehicle:</label>
+        <input type="hidden" id="vehicleId" name="vehicleId" />
+        <input type="text" id="vehicleTextbox" name="vehicleTextbox" readonly />
+      </div>
+      <div class="form-group">
+        <button type="button" onclick="editVehicle()">Edit Vehicle</button>
+        <button type="button" onclick="deleteVehicle()">Delete Vehicle</button>
+      </div>
+
+      <div class="buttons">
+        <button type="button" onclick="cancel()">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+      <button class="back-button" onclick="window.location.href = 'index.html';">Back</button>
+    </fieldset>
+  </form>
+  <div id="errorAlert" class="alert hidden"></div>
+</div>
+
+<script>
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const contractNo = urlParams.get('contractNo');
+
+  function updateCustomerTextbox(value) {
+    const customerList = document.getElementById('customerList');
+    const selectedCustomer = customerList.options[customerList.selectedIndex];
+    const fullName = selectedCustomer.text;
+    const customerId = selectedCustomer.value;
+
+    document.getElementById('customerId').value = customerId;
+    document.getElementById('customerTextbox').value = fullName;
+  }
+
+
+  function updateVehicleTextBox(value) {
+    const vehicleList = document.getElementById('vehicleList');
+    const selectedVehicle = vehicleList.options[vehicleList.selectedIndex];
+    const vehicleText = selectedVehicle.text;
+    const vehicleId = selectedVehicle.value;
+
+    document.getElementById('vehicleId').value = vehicleId;
+    document.getElementById('vehicleTextbox').value = vehicleText;
+  }
+
+  function deleteCustomer() {
+    document.getElementById('customerTextbox').value = '';
+  }
+
+  function deleteVehicle() {
+    document.getElementById('vehicleTextbox').value = '';
+  }
+
+  function cancel() {
+    location.reload();
+  }
+
+  fetch('/api/customer')
+          .then(response => response.json())
+          .then(customers => {
+            const customerList = document.getElementById('customerList');
+            customers.forEach(customer => {
+              const option = document.createElement('option');
+              option.value = customer.id;
+              option.text = customer.firstName + ' ' + customer.lastName;
+              option.dataset.birthDate = customer.birthDate;
+              customerList.appendChild(option);
+            });
+          });
+
+  fetch('/api/vehicle')
+          .then(response => response.json())
+          .then(vehicles => {
+            const vehicleList = document.getElementById('vehicleList');
+            vehicles.forEach(vehicle => {
+              const option = document.createElement('option');
+              option.value = vehicle.id;
+              option.text = vehicle.brand + ' ' + vehicle.model;
+              option.dataset.modelYear = vehicle.modelYear;
+              option.dataset.identificationNumber = vehicle.identificationNumber;
+              option.dataset.price = vehicle.price;
+              vehicleList.appendChild(option);
+            });
+          });
+
+  document.getElementById('leasingContractForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var formData = {
+      contractNumber: document.getElementById('contractNumber').value,
+      monthlyRate: document.getElementById('monthlyRate').value,
+      customer_id: document.getElementById('customerId').value,
+      vehicle_id: document.getElementById('vehicleId').value
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const contractNo = urlParams.get('contractNumber');
+
+    const requestMethod = contractNo ? 'PUT' : 'POST';
+    const url = contractNo ? '/api/leasingContract/'+contractNo : '/api/leasingContract';
+
+    fetch(url, {
+      method: requestMethod,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+            .then(response => {
+              if (response.ok) {
+                location.reload();
+                return response.json();
+              } else {
+                return response.json().then(data => {
+                  throw new Error('Error: ' + data.error);
+                });
+              }
+            })
+            .then(data => {
+              console.log(data);
+            })
+            .catch(error => {
+              showAlert(error.message);
+            });
+  });
+
+  function editCustomer() {
+    const customerId = document.getElementById('customerId').value;
+    if (customerId) {
+      window.location.href = 'customer.html?customerId=' + customerId;
+    }
+  }
+
+  function editVehicle() {
+    const vehicleId = document.getElementById('vehicleId').value;
+    if (vehicleId) {
+      window.location.href = 'vehicle.html?vehicleId=' + vehicleId;
+    }
+  }
+
+  function showAlert(message) {
+    var errorAlert = document.getElementById('errorAlert');
+    errorAlert.textContent = message;
+    errorAlert.classList.remove('hidden');
+  }
+  function getDefaultValues() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const contractNo = urlParams.get('contractNumber');
+
+    if (contractNo) {
+      fetch(`/api/leasingContract/${contractNo}`)
+              .then(response => response.json())
+              .then(leasingContract => {
+                document.getElementById('contractNumber').value = leasingContract.contractNo || '';
+                document.getElementById('monthlyRate').value = leasingContract.monthlyRate || '';
+
+                const customerId = leasingContract.customerId;
+                const customerTextbox = document.getElementById('customerTextbox');
+
+                if (customerId) {
+                  fetch(`/api/customer/${customerId}`)
+                          .then(response => response.json())
+                          .then(customer => {
+                            const fullName = customer.firstName + ' ' + customer.lastName;
+                            document.getElementById('customerId').value = customerId;
+                            customerTextbox.value = fullName;
+                          })
+                          .catch(error => {
+                            console.log(error);
+                          });
+                }
+
+                const vehicleId = leasingContract.vehicleId;
+                const vehicleTextbox = document.getElementById('vehicleTextbox');
+
+                if (vehicleId) {
+                  fetch(`/api/vehicle/${vehicleId}`)
+                          .then(response => response.json())
+                          .then(vehicle => {
+                            const vehicleBrandModel = vehicle.brand + ' ' + vehicle.model;
+                            document.getElementById('vehicleId').value = vehicleId;
+                            vehicleTextbox.value = vehicleBrandModel;
+                          })
+                          .catch(error => {
+                            console.log(error);
+                          });
+                }
+              })
+              .catch(error => {
+                console.log(error);
+              });
+    }
+  }
+
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    getDefaultValues();
+  });
+</script>
+</body>
+</html>
