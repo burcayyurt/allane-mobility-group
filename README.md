@@ -15,7 +15,7 @@ How to Start the Application
 ----------------------------
 To start the Allane application, follow these steps:
 
-1. Clone the repository from GitHub: [https://github.com/your-username/allane-project](https://github.com/your-username/allane-project)
+1. Clone the repository from GitHub: https://github.com/burcayyurt/allane-mobility-group
 2. Navigate to the project directory using the command line or terminal.
 3. Open the `application.properties` file located in the `src/main/resources` directory.
 4. Configure the database connection properties according to your setup. If you have Docker, you can use the Dockerized database setup instructions provided later in this README.
